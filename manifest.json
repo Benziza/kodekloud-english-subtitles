@@ -1,17 +1,17 @@
 {
   "manifest_version": 3,
-  "name": "KodeKloud English Subtitles",
-  "version": "1.0.0",
-  "description": "Automatically enables available English subtitles on KodeKloud lessons.",
+  "name": "KodeKloud Subtitle Companion",
+  "version": "2.0.0",
+  "description": "Shows available KodeKloud English subtitles live in a separate companion tab.",
   "permissions": [
-    "activeTab",
+    "tabs",
     "storage"
   ],
   "background": {
     "service_worker": "service-worker.js"
   },
   "action": {
-    "default_title": "KodeKloud English Subtitles",
+    "default_title": "KodeKloud Subtitle Companion",
     "default_popup": "popup.html"
   },
   "content_scripts": [
@@ -23,9 +23,6 @@
       "js": [
         "subtitle-engine.js",
         "content.js"
-      ],
-      "css": [
-        "content.css"
       ],
       "all_frames": true,
       "match_about_blank": true,

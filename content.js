@@ -1,13 +1,15 @@
-(function enableKodeKloudEnglishSubtitles() {
+(function runKodeKloudSubtitleCompanion() {
   "use strict";
 
   const engine = globalThis.KKESubtitleEngine;
   const observedVideos = new WeakSet();
-  const observedTracks = new WeakSet();
+  const observedTrackElements = new WeakSet();
+  const observedTextTracks = new WeakSet();
+  const activeTracks = new WeakMap();
+  const lastPublishTimes = new WeakMap();
   const settingsDefaults = { enabled: true };
   let extensionEnabled = true;
   let lastReportedState = "";
-  let lastToastUrl = "";
   let lastVimeoEnglishTrack = null;
   let scanTimer = null;
 
@@ -89,24 +91,57 @@
     });
   }
 
-  function showToast(label) {
-    const urlKey = `${location.href}|${label}`;
-    if (urlKey === lastToastUrl || document.getElementById("kke-subtitle-toast")) {
+  function cueText(track) {
+    return Array.from(track && track.activeCues || [])
+      .map((cue) => {
+        if (typeof cue.text === "string") {
+          return cue.text;
+        }
+        try {
+          return cue.getCueAsHTML().textContent || "";
+        } catch (_error) {
+          return "";
+        }
+      })
+      .map((text) => text.trim())
+      .filter(Boolean)
+      .join("\n");
+  }
+
+  function publishVideoState(video, track, force = false) {
+    const now = Date.now();
+    const lastPublish = lastPublishTimes.get(video) || 0;
+    if (!force && now - lastPublish < 200) {
       return;
     }
+    lastPublishTimes.set(video, now);
 
-    lastToastUrl = urlKey;
-    const toast = document.createElement("div");
-    toast.id = "kke-subtitle-toast";
-    toast.setAttribute("role", "status");
-    toast.textContent = `English subtitles enabled${label ? ` (${label})` : ""}`;
-    (document.body || document.documentElement).appendChild(toast);
+    const activeCues = Array.from(track && track.activeCues || []);
+    const firstCue = activeCues[0] || null;
+    chrome.runtime.sendMessage({
+      type: "subtitle-update",
+      update: {
+        state: "enabled",
+        trackLabel: track.label || track.language || "English",
+        currentCue: cueText(track),
+        cueStartTime: firstCue && Number.isFinite(firstCue.startTime)
+          ? firstCue.startTime
+          : Number(video.currentTime || 0),
+        currentTime: Number(video.currentTime || 0),
+        duration: Number.isFinite(video.duration) ? video.duration : 0,
+        paused: video.paused,
+        playbackRate: Number(video.playbackRate || 1)
+      }
+    }).catch(() => {});
+  }
 
-    requestAnimationFrame(() => toast.classList.add("kke-subtitle-toast--visible"));
-    setTimeout(() => {
-      toast.classList.remove("kke-subtitle-toast--visible");
-      setTimeout(() => toast.remove(), 250);
-    }, 2200);
+  function watchSelectedTrack(video, track) {
+    activeTracks.set(video, track);
+    if (!observedTextTracks.has(track)) {
+      observedTextTracks.add(track);
+      track.addEventListener("cuechange", () => publishVideoState(video, track, true));
+    }
+    publishVideoState(video, track, true);
   }
 
   function markMatchingTrackElement(video, selectedTrack) {
@@ -119,7 +154,6 @@
       const isMatch =
         (selectedLanguage && elementLanguage === selectedLanguage) ||
         (selectedLabel && elementLabel === selectedLabel);
-
       trackElement.default = Boolean(isMatch);
     }
   }
@@ -127,14 +161,36 @@
   function watchVideo(video) {
     if (!observedVideos.has(video)) {
       observedVideos.add(video);
-      for (const eventName of ["loadedmetadata", "loadeddata", "play", "durationchange"]) {
-        video.addEventListener(eventName, scheduleScan, { passive: true });
+      for (const eventName of [
+        "loadedmetadata",
+        "loadeddata",
+        "play",
+        "pause",
+        "seeking",
+        "seeked",
+        "ratechange",
+        "ended",
+        "durationchange"
+      ]) {
+        video.addEventListener(eventName, () => {
+          scheduleScan();
+          const track = activeTracks.get(video);
+          if (track) {
+            publishVideoState(video, track, true);
+          }
+        }, { passive: true });
       }
+      video.addEventListener("timeupdate", () => {
+        const track = activeTracks.get(video);
+        if (track) {
+          publishVideoState(video, track);
+        }
+      }, { passive: true });
     }
 
     for (const trackElement of video.querySelectorAll("track")) {
-      if (!observedTracks.has(trackElement)) {
-        observedTracks.add(trackElement);
+      if (!observedTrackElements.has(trackElement)) {
+        observedTrackElements.add(trackElement);
         trackElement.addEventListener("load", scheduleScan, { passive: true });
       }
     }
@@ -164,6 +220,7 @@
       if (result.enabled && result.selected) {
         enabledLabel = result.selected.label || result.selected.language || "English";
         markMatchingTrackElement(video, result.selected);
+        watchSelectedTrack(video, result.selected);
       }
     }
 
@@ -175,7 +232,6 @@
 
     if (englishTrackEnabled) {
       report("enabled", { label: enabledLabel, videoCount: videos.length });
-      showToast(enabledLabel);
     } else if (englishTrackFound) {
       report("found", { videoCount: videos.length });
     } else if (videos.length) {
