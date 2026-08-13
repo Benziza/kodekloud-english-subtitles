@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>KodeKloud Subtitle Companion</title>
+    <title>English Subtitle Finder</title>
     <link rel="stylesheet" href="popup.css">
   </head>
   <body>
@@ -11,43 +11,30 @@
       <header>
         <span class="logo" aria-hidden="true">CC</span>
         <div>
-          <h1>Subtitle Companion</h1>
-          <p>English captions in a separate tab</p>
+          <h1>English Subtitle Finder</h1>
+          <p>Open the original subtitle track</p>
         </div>
       </header>
 
-      <div class="settings-card">
-        <label class="toggle-row" for="enabled">
-          <span>
-            <strong>Capture English subtitles</strong>
-            <small>Read the lesson's available English track</small>
-          </span>
-          <input id="enabled" type="checkbox">
-          <span class="toggle" aria-hidden="true"></span>
-        </label>
-
-        <label class="toggle-row" for="auto-open">
-          <span>
-            <strong>Open companion automatically</strong>
-            <small>Create one subtitle tab per lesson tab</small>
-          </span>
-          <input id="auto-open" type="checkbox">
-          <span class="toggle" aria-hidden="true"></span>
-        </label>
-      </div>
-
-      <section class="status-card" aria-live="polite">
+      <section id="status-card" class="status-card" aria-live="polite">
         <span id="status-dot" class="status-dot"></span>
         <div>
-          <strong id="status-title">Checking this page...</strong>
-          <p id="status-copy">Open a KodeKloud video lesson.</p>
+          <strong id="status-title">Looking for subtitles...</strong>
+          <p id="status-copy">Checking the video and its embedded player.</p>
         </div>
       </section>
 
-      <button id="open-viewer" class="primary" type="button">Open subtitle tab</button>
-      <button id="rescan" class="secondary" type="button">Check again</button>
-      <p class="privacy">Runs locally. No audio or course data is uploaded.</p>
+      <section id="result" class="result" hidden>
+        <span class="result-label">ENGLISH TRACK</span>
+        <strong id="track-name">English</strong>
+        <code id="subtitle-url"></code>
+      </section>
+
+      <button id="open" class="primary" type="button" disabled>Open subtitles in new tab</button>
+      <button id="find" class="secondary" type="button">Search again</button>
+      <p class="privacy">Runs locally and only reads subtitle track links.</p>
     </main>
+    <script src="track-selector.js"></script>
     <script src="popup.js"></script>
   </body>
 </html>
