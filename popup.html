@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>KodeKloud English Subtitles</title>
+    <title>KodeKloud Subtitle Companion</title>
     <link rel="stylesheet" href="popup.css">
   </head>
   <body>
@@ -11,30 +11,42 @@
       <header>
         <span class="logo" aria-hidden="true">CC</span>
         <div>
-          <h1>English Subtitles</h1>
-          <p>KodeKloud auto-caption selector</p>
+          <h1>Subtitle Companion</h1>
+          <p>English captions in a separate tab</p>
         </div>
       </header>
 
-      <label class="toggle-row" for="enabled">
-        <span>
-          <strong>Enable automatically</strong>
-          <small>Prefer English on every lesson</small>
-        </span>
-        <input id="enabled" type="checkbox">
-        <span class="toggle" aria-hidden="true"></span>
-      </label>
+      <div class="settings-card">
+        <label class="toggle-row" for="enabled">
+          <span>
+            <strong>Capture English subtitles</strong>
+            <small>Read the lesson's available English track</small>
+          </span>
+          <input id="enabled" type="checkbox">
+          <span class="toggle" aria-hidden="true"></span>
+        </label>
+
+        <label class="toggle-row" for="auto-open">
+          <span>
+            <strong>Open companion automatically</strong>
+            <small>Create one subtitle tab per lesson tab</small>
+          </span>
+          <input id="auto-open" type="checkbox">
+          <span class="toggle" aria-hidden="true"></span>
+        </label>
+      </div>
 
       <section class="status-card" aria-live="polite">
         <span id="status-dot" class="status-dot"></span>
         <div>
-          <strong id="status-title">Checking this page…</strong>
+          <strong id="status-title">Checking this page...</strong>
           <p id="status-copy">Open a KodeKloud video lesson.</p>
         </div>
       </section>
 
-      <button id="rescan" type="button">Check again</button>
-      <p class="privacy">Runs locally. No audio or course data is collected.</p>
+      <button id="open-viewer" class="primary" type="button">Open subtitle tab</button>
+      <button id="rescan" class="secondary" type="button">Check again</button>
+      <p class="privacy">Runs locally. No audio or course data is uploaded.</p>
     </main>
     <script src="popup.js"></script>
   </body>

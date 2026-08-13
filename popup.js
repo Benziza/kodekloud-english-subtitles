@@ -1,21 +1,23 @@
 "use strict";
 
 const enabledInput = document.getElementById("enabled");
+const autoOpenInput = document.getElementById("auto-open");
 const statusDot = document.getElementById("status-dot");
 const statusTitle = document.getElementById("status-title");
 const statusCopy = document.getElementById("status-copy");
+const openViewerButton = document.getElementById("open-viewer");
 const rescanButton = document.getElementById("rescan");
-let activeTabId = null;
+let sourceTabId = null;
 
 const statusMessages = {
   enabled: {
-    title: "English subtitles are on",
-    copy: "The English caption track is active.",
+    title: "English track connected",
+    copy: "Open the subtitle tab and play the lesson.",
     className: "enabled"
   },
   found: {
     title: "English track detected",
-    copy: "The player has not accepted the selection yet. Start the video and check again.",
+    copy: "Start the video, then open the subtitle tab.",
     className: "warning"
   },
   unavailable: {
@@ -24,8 +26,8 @@ const statusMessages = {
     className: "warning"
   },
   disabled: {
-    title: "Automatic subtitles are off",
-    copy: "Turn the switch on to select English automatically.",
+    title: "Subtitle capture is off",
+    copy: "Turn the first switch on to capture English captions.",
     className: ""
   },
   waiting: {
@@ -47,21 +49,35 @@ async function currentTab() {
   return tabs[0] || null;
 }
 
+function sourceIdFromViewerUrl(url) {
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol === "chrome-extension:" && parsed.pathname.endsWith("/viewer.html")) {
+      return Number(parsed.searchParams.get("sourceTabId"));
+    }
+  } catch (_error) {
+    // Not a URL handled by this extension.
+  }
+  return null;
+}
+
 async function refreshStatus() {
   const tab = await currentTab();
-  activeTabId = tab && tab.id;
+  const viewerSourceId = tab && sourceIdFromViewerUrl(tab.url || "");
+  sourceTabId = viewerSourceId || tab && tab.id;
 
-  if (!tab || !/^https:\/\/(learn\.kodekloud\.com|player\.vimeo\.com)\//i.test(tab.url || "")) {
+  if (!tab || (!viewerSourceId && !/^https:\/\/learn\.kodekloud\.com\//i.test(tab.url || ""))) {
     statusTitle.textContent = "Open KodeKloud first";
-    statusCopy.textContent = "This extension only runs on KodeKloud lessons and their video player.";
+    statusCopy.textContent = "Open a KodeKloud lesson before creating its subtitle tab.";
     statusDot.className = "status-dot warning";
+    openViewerButton.disabled = true;
     rescanButton.disabled = true;
     return;
   }
 
   const status = await chrome.runtime.sendMessage({
     type: "get-tab-status",
-    tabId: tab.id
+    tabId: sourceTabId
   });
   renderStatus(status && status.state);
 }
@@ -71,16 +87,36 @@ enabledInput.addEventListener("change", async () => {
   renderStatus(enabledInput.checked ? "waiting" : "disabled");
 });
 
+autoOpenInput.addEventListener("change", async () => {
+  await chrome.storage.sync.set({ autoOpenViewer: autoOpenInput.checked });
+});
+
+openViewerButton.addEventListener("click", async () => {
+  if (!sourceTabId) {
+    return;
+  }
+  openViewerButton.textContent = "Opening...";
+  const result = await chrome.runtime.sendMessage({
+    type: "open-subtitle-viewer",
+    sourceTabId
+  });
+  if (result && result.ok) {
+    window.close();
+  } else {
+    openViewerButton.textContent = "Could not open subtitle tab";
+  }
+});
+
 rescanButton.addEventListener("click", async () => {
-  if (!activeTabId) {
+  if (!sourceTabId) {
     return;
   }
 
-  rescanButton.textContent = "Checking…";
+  rescanButton.textContent = "Checking...";
   try {
-    await chrome.tabs.sendMessage(activeTabId, { type: "rescan-subtitles" });
+    await chrome.tabs.sendMessage(sourceTabId, { type: "rescan-subtitles" });
   } catch (_error) {
-    // The top page may not have a content script while its video frame does.
+    // The video frame can respond even if the top page does not.
   }
 
   setTimeout(async () => {
@@ -90,10 +126,11 @@ rescanButton.addEventListener("click", async () => {
 });
 
 Promise.all([
-  chrome.storage.sync.get({ enabled: true }),
+  chrome.storage.sync.get({ enabled: true, autoOpenViewer: true }),
   refreshStatus()
 ]).then(([settings]) => {
   enabledInput.checked = settings.enabled !== false;
+  autoOpenInput.checked = settings.autoOpenViewer !== false;
   if (!enabledInput.checked) {
     renderStatus("disabled");
   }

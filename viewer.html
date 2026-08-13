@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>English Subtitle Companion</title>
+    <link rel="stylesheet" href="viewer.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">CC</span>
+          <div>
+            <p class="eyebrow">KodeKloud companion</p>
+            <h1 id="lesson-title">English subtitles</h1>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <div id="connection-status" class="connection-status waiting">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span id="connection-label">Waiting for the lesson</span>
+          </div>
+          <button id="focus-source" type="button">Back to lesson</button>
+        </div>
+      </header>
+
+      <section class="current-caption" aria-live="polite" aria-atomic="true">
+        <p id="track-label" class="caption-label">ENGLISH</p>
+        <p id="current-cue" class="caption-text">Start a KodeKloud video to see its English subtitles here.</p>
+        <div class="playback-row">
+          <span id="playback-state">Waiting</span>
+          <span id="playback-time">0:00 / 0:00</span>
+        </div>
+        <div class="progress-track" aria-hidden="true">
+          <span id="progress-bar"></span>
+        </div>
+      </section>
+
+      <section class="transcript-panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Recent captions</p>
+            <h2>Transcript</h2>
+          </div>
+          <div class="font-controls" aria-label="Subtitle text size">
+            <button id="font-smaller" type="button" aria-label="Make subtitles smaller">A−</button>
+            <button id="font-larger" type="button" aria-label="Make subtitles larger">A+</button>
+          </div>
+        </div>
+        <ol id="transcript" class="transcript-list">
+          <li class="empty-transcript">Caption history will appear as the video plays.</li>
+        </ol>
+      </section>
+    </main>
+    <script src="viewer-model.js"></script>
+    <script src="viewer.js"></script>
+  </body>
+</html>
