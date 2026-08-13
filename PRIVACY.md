@@ -10,6 +10,8 @@ The extension:
 - does not use analytics or advertising;
 - does not send browsing or course data to a remote server.
 
-The extension stores one preference through the browser's synchronized extension storage: whether automatic English subtitle selection is enabled.
+The extension temporarily holds the current caption and recent caption history in browser extension memory so they can be displayed in the companion tab. This information is not written to disk or sent anywhere and is discarded when the browser session ends or the extension reloads.
+
+The extension stores two preferences through the browser's synchronized extension storage: whether subtitle capture is enabled and whether the companion tab should open automatically.
 
 Last updated: August 13, 2026.
