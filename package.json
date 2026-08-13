@@ -1,6 +1,6 @@
 {
   "name": "kodekloud-english-subtitle-finder",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "private": true,
   "description": "Find a KodeKloud video's English subtitle track and open it in a separate browser tab.",
   "scripts": {

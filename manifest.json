@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "KodeKloud English Subtitle Finder",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Finds the English subtitle track on a KodeKloud video and opens it in a separate tab.",
   "permissions": [
     "activeTab",
@@ -12,7 +12,7 @@
     "https://player.vimeo.com/*"
   ],
   "action": {
-    "default_title": "Open English subtitles",
+    "default_title": "Open subtitles in new tab",
     "default_popup": "popup.html"
   }
 }
