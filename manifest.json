@@ -1,32 +1,18 @@
 {
   "manifest_version": 3,
-  "name": "KodeKloud Subtitle Companion",
-  "version": "2.0.0",
-  "description": "Shows available KodeKloud English subtitles live in a separate companion tab.",
+  "name": "KodeKloud English Subtitle Finder",
+  "version": "3.0.0",
+  "description": "Finds the English subtitle track on a KodeKloud video and opens it in a separate tab.",
   "permissions": [
-    "tabs",
-    "storage"
+    "activeTab",
+    "scripting"
   ],
-  "background": {
-    "service_worker": "service-worker.js"
-  },
+  "host_permissions": [
+    "https://learn.kodekloud.com/*",
+    "https://player.vimeo.com/*"
+  ],
   "action": {
-    "default_title": "KodeKloud Subtitle Companion",
+    "default_title": "Open English subtitles",
     "default_popup": "popup.html"
-  },
-  "content_scripts": [
-    {
-      "matches": [
-        "https://learn.kodekloud.com/*",
-        "https://player.vimeo.com/*"
-      ],
-      "js": [
-        "subtitle-engine.js",
-        "content.js"
-      ],
-      "all_frames": true,
-      "match_about_blank": true,
-      "run_at": "document_idle"
-    }
-  ]
+  }
 }
