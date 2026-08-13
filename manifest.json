@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "KodeKloud English Subtitles",
+  "version": "1.0.0",
+  "description": "Automatically enables available English subtitles on KodeKloud lessons.",
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+  "action": {
+    "default_title": "KodeKloud English Subtitles",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://learn.kodekloud.com/*",
+        "https://player.vimeo.com/*"
+      ],
+      "js": [
+        "subtitle-engine.js",
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "all_frames": true,
+      "match_about_blank": true,
+      "run_at": "document_idle"
+    }
+  ]
+}

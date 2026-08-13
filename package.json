@@ -1,0 +1,11 @@
+{
+  "name": "kodekloud-english-subtitles",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A Chrome and Edge extension that automatically enables available English subtitles on KodeKloud.",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "validate": "node -e \"JSON.parse(require('fs').readFileSync('manifest.json', 'utf8')); console.log('Manifest is valid JSON.')\""
+  },
+  "license": "MIT"
+}
