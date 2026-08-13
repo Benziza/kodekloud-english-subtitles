@@ -9,8 +9,9 @@ This version is inspired by a simple Vimeo subtitle-finder workflow: inspect eve
 1. Open a video lesson on `learn.kodekloud.com`.
 2. Start the video so its embedded Vimeo player and subtitle tracks load.
 3. Click the extension icon.
-4. The extension searches the page, Vimeo iframe, and open Shadow DOM roots.
-5. Click **Open subtitles in new tab**.
+4. Click the single **Open subtitles in new tab** button.
+
+That button searches the page, Vimeo iframe, and open Shadow DOM roots, then immediately opens the English subtitle source.
 
 The new tab contains the original English subtitle resource supplied to the video player, commonly a WebVTT file.
 
@@ -19,7 +20,7 @@ The new tab contains the original English subtitle resource supplied to the vide
 - Searches all accessible frames, including the Vimeo player.
 - Searches video tracks inside open Shadow DOM roots.
 - Recognizes `en`, English regional codes such as `en-US`, and labels containing “English”.
-- Shows the discovered track label and URL before opening it.
+- Uses a single button to search and open the result.
 - Opens the original subtitle resource in a separate tab.
 - Uses host access only for KodeKloud and Vimeo—not every website.
 - No analytics, remote server, or audio recording.
@@ -64,9 +65,9 @@ After changing the source, open the browser's extensions page and click **Reload
 
 ```text
 manifest.json       Extension permissions and popup configuration
-popup.html          Finder interface
-popup.css           Popup design
-popup.js            Multi-frame search and new-tab opening
+popup.html          Single-button interface
+popup.css           Minimal popup design
+popup.js            Multi-frame search and direct new-tab opening
 track-selector.js   Testable English-track selection helpers
 tests/               Unit tests
 ```
