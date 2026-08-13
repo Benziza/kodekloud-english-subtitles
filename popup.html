@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>KodeKloud English Subtitles</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main>
+      <header>
+        <span class="logo" aria-hidden="true">CC</span>
+        <div>
+          <h1>English Subtitles</h1>
+          <p>KodeKloud auto-caption selector</p>
+        </div>
+      </header>
+
+      <label class="toggle-row" for="enabled">
+        <span>
+          <strong>Enable automatically</strong>
+          <small>Prefer English on every lesson</small>
+        </span>
+        <input id="enabled" type="checkbox">
+        <span class="toggle" aria-hidden="true"></span>
+      </label>
+
+      <section class="status-card" aria-live="polite">
+        <span id="status-dot" class="status-dot"></span>
+        <div>
+          <strong id="status-title">Checking this page…</strong>
+          <p id="status-copy">Open a KodeKloud video lesson.</p>
+        </div>
+      </section>
+
+      <button id="rescan" type="button">Check again</button>
+      <p class="privacy">Runs locally. No audio or course data is collected.</p>
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>
