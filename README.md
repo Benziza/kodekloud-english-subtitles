@@ -1,31 +1,30 @@
-# KodeKloud Subtitle Companion
+# KodeKloud English Subtitle Finder
 
-A Chrome and Microsoft Edge extension that displays a KodeKloud lesson's available English captions live in a separate companion tab.
+A small Chrome and Microsoft Edge extension that finds the English subtitle track used by a KodeKloud video and opens the original subtitle file in a separate browser tab.
 
-## What it does
+This version is inspired by a simple Vimeo subtitle-finder workflow: inspect every accessible frame, locate an English `<track>` source, and open that source directly.
 
-1. Detects a video lesson on `learn.kodekloud.com`.
-2. Selects the lesson's available English subtitle or closed-caption track.
-3. Opens one companion tab beside the KodeKloud lesson.
-4. Shows the current English caption in large text, synchronized with playback.
-5. Keeps a recent caption history so a sentence can be read again.
+## How it works
 
-The video remains in the original KodeKloud tab. The subtitles appear in the separate companion tab.
+1. Open a video lesson on `learn.kodekloud.com`.
+2. Start the video so its embedded Vimeo player and subtitle tracks load.
+3. Click the extension icon.
+4. The extension searches the page, Vimeo iframe, and open Shadow DOM roots.
+5. Click **Open subtitles in new tab**.
+
+The new tab contains the original English subtitle resource supplied to the video player, commonly a WebVTT file.
 
 ## Features
 
-- Separate, distraction-free English subtitle tab.
-- Automatic companion-tab opening, with an on/off setting.
-- Manual **Open subtitle tab** button from the extension popup.
-- Live playback time, progress, pause/play state, and caption history.
-- Adjustable subtitle text size.
-- Works with dynamically loaded KodeKloud lessons and the embedded Vimeo player.
-- Supports English variants such as `en`, `en-US`, and `en-GB`.
-- Runs locally without uploading audio or course data.
+- Searches all accessible frames, including the Vimeo player.
+- Searches video tracks inside open Shadow DOM roots.
+- Recognizes `en`, English regional codes such as `en-US`, and labels containing “English”.
+- Shows the discovered track label and URL before opening it.
+- Opens the original subtitle resource in a separate tab.
+- Uses host access only for KodeKloud and Vimeo—not every website.
+- No analytics, remote server, or audio recording.
 
-## Install locally
-
-### Microsoft Edge
+## Install in Microsoft Edge
 
 1. Download this repository and extract it if necessary.
 2. Open `edge://extensions`.
@@ -33,7 +32,7 @@ The video remains in the original KodeKloud tab. The subtitles appear in the sep
 4. Click **Load unpacked**.
 5. Select the folder containing `manifest.json`.
 
-### Google Chrome
+## Install in Google Chrome
 
 1. Download this repository and extract it if necessary.
 2. Open `chrome://extensions`.
@@ -41,18 +40,14 @@ The video remains in the original KodeKloud tab. The subtitles appear in the sep
 4. Click **Load unpacked**.
 5. Select the folder containing `manifest.json`.
 
-## Use
+## If no English subtitle is found
 
-1. Open a KodeKloud video lesson.
-2. Start the video.
-3. The companion tab opens automatically when an English track is detected.
-4. If it does not open, click the extension icon and select **Open subtitle tab**.
+- Confirm that you opened a video lesson rather than the course catalog.
+- Start the video and wait for the Vimeo player to finish loading.
+- Click **Search again**.
+- Confirm that the extension is allowed on KodeKloud and Vimeo.
 
-Keep both tabs open. The companion tab reads playback information from the original KodeKloud lesson tab.
-
-## Important limitation
-
-This extension displays an English caption track that the lesson already provides. It does not perform speech-to-text transcription. If a lesson has no English caption track, the companion reports that captions are unavailable.
+Some lessons may not expose an English `<track>` source. The extension does not generate speech-to-text subtitles when no source track exists.
 
 ## Development
 
@@ -68,19 +63,17 @@ After changing the source, open the browser's extensions page and click **Reload
 ## Project structure
 
 ```text
-manifest.json          Extension configuration
-service-worker.js      Session state and companion-tab management
-subtitle-engine.js     English-track detection and selection
-content.js             KodeKloud/Vimeo caption capture
-popup.*                Extension controls and status
-viewer.*               Separate live subtitle companion tab
-viewer-model.js        Viewer formatting helpers
-tests/                  Automated unit tests
+manifest.json       Extension permissions and popup configuration
+popup.html          Finder interface
+popup.css           Popup design
+popup.js            Multi-frame search and new-tab opening
+track-selector.js   Testable English-track selection helpers
+tests/               Unit tests
 ```
 
 ## Privacy
 
-See [PRIVACY.md](PRIVACY.md). There is no analytics or remote server. Live captions are held temporarily in extension memory and are discarded when the browser session ends or the extension reloads.
+See [PRIVACY.md](PRIVACY.md). The extension only reads subtitle track metadata after the user clicks its toolbar icon.
 
 ## License
 
